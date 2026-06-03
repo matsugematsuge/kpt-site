@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ラストウォー 配置図ツール</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1a2e; color: #e0e0e0;
+    font-family: 'Segoe UI', sans-serif;
+    height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+  }
+  header {
+    background: #16213e; border-bottom: 2px solid #0f3460;
+    padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+  }
+  header h1 { font-size: 16px; color: #e94560; font-weight: 700; letter-spacing: 1px; }
+  .hint { font-size: 12px; color: #555; }
+  .main { display: flex; flex: 1; overflow: hidden; }
+
+  /* ===== LEFT ===== */
+  .canvas-area {
+    flex: 1; background: #0d0d1a;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .canvas-wrapper { position: relative; display: inline-block; line-height: 0; }
+  #mainCanvas { display: block; }
+  .drop-hint {
+    color: #555; font-size: 18px; text-align: center;
+    pointer-events: none; user-select: none; padding: 40px;
+  }
+
+  /* ===== FLOATING BLOCK EDITOR ===== */
+  #blockEditor {
+    position: absolute; display: none; z-index: 200;
+    background: rgba(10,10,20,0.95); border: 2px solid #e94560;
+    border-radius: 7px; padding: 8px 10px;
+    align-items: center; gap: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.7);
+  }
+  #editorColor { width:32px; height:30px; border:none; border-radius:4px; cursor:pointer; background:none; padding:0; flex-shrink:0; }
+  #editorName {
+    background: rgba(255,255,255,0.08); border: 1px solid #555;
+    border-radius: 4px; color: #fff; font-size: 13px;
+    padding: 5px 8px; outline: none; width: 130px;
+  }
+  #editorName:focus { border-color: #e94560; }
+  .editor-del {
+    background: none; border: none; cursor: pointer;
+    color: #e94560; font-size: 15px; font-weight: 700;
+    line-height: 1; flex-shrink: 0; padding: 2px 5px;
+  }
+  .editor-del:hover { color: #ff7070; }
+
+  /* ===== RIGHT PANEL ===== */
+  .panel {
+    width: 240px; background: #16213e;
+    border-left: 2px solid #0f3460;
+    display: flex; flex-direction: column;
+    overflow-y: auto; flex-shrink: 0;
+  }
+  .section { padding: 12px 16px; border-bottom: 1px solid #0f3460; }
+  .section-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    color: #e94560; margin-bottom: 10px; font-weight: 700;
+  }
+  .btn {
+    display: block; width: 100%; padding: 9px 12px;
+    border: none; border-radius: 5px; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: filter 0.15s; margin-bottom: 6px;
+  }
+  .btn:last-child { margin-bottom: 0; }
+  .btn:hover { filter: brightness(1.15); }
+  .btn-primary { background: #e94560; color: #fff; }
+  .btn-danger  { background: #c0392b; color: #fff; }
+  .btn-success { background: #27ae60; color: #fff; }
+
+  label { font-size: 12px; color: #aaa; display: block; margin-bottom: 4px; }
+  .slider-row { margin-bottom: 10px; }
+  .slider-row:last-child { margin-bottom: 0; }
+  .slider-row input[type=range] { width: 100%; accent-color: #e94560; }
+  .slider-val { font-size: 12px; color: #e94560; font-weight: 700; float: right; }
+
+  .color-row { display: flex; align-items: center; gap: 8px; }
+  .color-row input[type=color] { width:36px; height:28px; border:none; border-radius:4px; cursor:pointer; background:none; padding:0; }
+  .color-row label { margin-bottom: 0; flex: 1; }
+
+  .mode-row { display: flex; gap: 5px; }
+  .mode-btn {
+    flex: 1; padding: 7px 4px;
+    border: 2px solid transparent; border-radius: 5px;
+    font-size: 11px; font-weight: 700; cursor: pointer;
+    background: #0d0d1a; color: #aaa; transition: all 0.15s;
+  }
+  .mode-btn.active { border-color: #e94560; color: #e94560; background: #1a0a10; }
+
+  /* ===== TABS ===== */
+  .tab-bar {
+    display: flex; flex-shrink: 0;
+    background: #0d0d1a; border-bottom: 2px solid #0f3460;
+  }
+  .tab-btn {
+    flex: 1; padding: 9px 6px;
+    background: none; border: none; border-bottom: 3px solid transparent;
+    color: #555; font-size: 10px; font-weight: 700; cursor: pointer;
+    transition: all 0.15s; margin-bottom: -2px; letter-spacing: 0.3px;
+  }
+  .tab-btn:hover:not(.active) { color: #aaa; }
+  .tab-btn.active { color: #e94560; border-bottom-color: #e94560; background: #16213e; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  #fileInput { display: none; }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: #0d0d1a; }
+  ::-webkit-scrollbar-thumb { background: #0f3460; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚔ LAST WAR — 配置図ツール</h1>
+  <span class="hint">配置: クリックで追加・編集 &nbsp;|&nbsp; 移動: ドラッグで移動・コーナーでリサイズ &nbsp;|&nbsp; 右クリックで削除</span>
+</header>
+
+<div class="main">
+  <div class="canvas-area" id="canvasArea">
+    <div class="drop-hint" id="dropHint">
+      画像をドラッグ＆ドロップ<br>または右パネルから読み込み
+    </div>
+    <div class="canvas-wrapper" id="canvasWrapper" style="display:none;">
+      <canvas id="mainCanvas"></canvas>
+      <div id="blockEditor">
+        <input type="color" id="editorColor" title="ブロックの色">
+        <input type="text"  id="editorName" maxlength="40" placeholder="担当者名">
+        <button class="editor-del" id="blockDel" title="削除">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+
+    <div class="section">
+      <div class="section-title">画像</div>
+      <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">📂 スクリーンショット読み込み</button>
+      <input type="file" id="fileInput" accept="image/*">
+    </div>
+
+    <div class="section">
+      <div class="section-title">操作モード</div>
+      <div class="mode-row">
+        <button class="mode-btn active" id="modePlace" onclick="setMode('place')">配置</button>
+        <button class="mode-btn"        id="modeMove"  onclick="setMode('move')">移動・リサイズ</button>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="grid"  onclick="switchTab('grid')">グリッド・パース</button>
+      <button class="tab-btn"        data-tab="style" onclick="switchTab('style')">ブロックスタイル</button>
+    </div>
+
+    <div id="tab-grid" class="tab-pane active">
+      <div class="section">
+        <div class="section-title">グリッド設定</div>
+        <div class="slider-row">
+          <label>横間隔 <span class="slider-val" id="valX">40</span>px</label>
+          <input type="range" id="sliderX" min="4" max="120" value="40">
+        </div>
+        <div class="slider-row">
+          <label>縦間隔 <span class="slider-val" id="valY">40</span>px</label>
+          <input type="range" id="sliderY" min="4" max="120" value="40">
+        </div>
+        <div class="slider-row">
+          <label>始点X <span class="slider-val" id="valOX">0</span>px</label>
+          <input type="range" id="sliderOX" min="-100" max="100" value="0">
+        </div>
+        <div class="slider-row">
+          <label>始点Y <span class="slider-val" id="valOY">0</span>px</label>
+          <input type="range" id="sliderOY" min="-100" max="100" value="0">
+        </div>
+        <div class="slider-row">
+          <label>グリッド表示 <span class="slider-val" id="valGridAlpha">30%</span></label>
+          <input type="range" id="sliderGridAlpha" min="0" max="100" value="30">
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-title">パース（X方向のみ）</div>
+        <div class="slider-row">
+          <label>強度 <span class="slider-val" id="valPersp">20</span></label>
+          <input type="range" id="sliderPersp" min="0" max="80" value="20">
+        </div>
+        <div class="slider-row" style="margin-bottom:0;">
+          <label>消失点の位置 <span class="slider-val" id="valVpX">50</span>%</label>
+          <input type="range" id="sliderVpX" min="0" max="100" value="50">
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-style" class="tab-pane">
+      <div class="section">
+        <div class="section-title">ブロックスタイル</div>
+        <div class="color-row" style="margin-bottom:10px;">
+          <input type="color" id="blockColor" value="#e94560">
+          <label>新規ブロックの色</label>
+        </div>
+        <div class="slider-row" style="margin-bottom:0;">
+          <label>透明度 <span class="slider-val" id="valAlpha">50</span>%</label>
+          <input type="range" id="sliderAlpha" min="5" max="95" value="50">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">出力</div>
+      <button class="btn btn-success" onclick="exportImage()">💾 PNG画像として保存</button>
+      <button class="btn btn-danger"  onclick="clearAll()">🗑 全ブロック削除</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let img = null, canvasScale = 1;
+let gridX = 40, gridY = 40;
+let gridOffsetX = 0, gridOffsetY = 0;
+let gridAlpha = 0.30, blockAlpha = 0.50;
+let perspStrength = 20, vpXRatio = 0.5;
+let blocks = [];
+let mode = 'place';
+let nextId = 1;
+let dragging = null;
+let editingBlock = null;
+
+const canvas  = document.getElementById('mainCanvas');
+const ctx     = canvas.getContext('2d');
+const wrapper = document.getElementById('canvasWrapper');
+const HANDLE  = 7;
+
+// ===== TABS =====
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.id === 'tab-' + name));
+}
+
+// ===== PERSPECTIVE (X-only) =====
+function perspProject(col, row) {
+  const gxPx   = gridX * canvasScale;
+  const gyPx   = gridY * canvasScale;
+  const offX   = gridOffsetX * canvasScale;
+  const offY   = gridOffsetY * canvasScale;
+  const flatX  = col * gxPx + offX;
+  const screenY = row * gyPx + offY;
+
+  if (perspStrength === 0) return { x: flatX, y: screenY };
+
+  const k     = perspStrength / 100 * 2.5;
+  const vpX   = canvas.width * vpXRatio;
+  const tRow  = screenY / canvas.height;
+  const screenX = vpX + (flatX - vpX) * (1 + k * tRow) / (1 + k);
+  return { x: screenX, y: screenY };
+}
+
+function perspInverse(sx, sy) {
+  const gxPx = gridX * canvasScale;
+  const gyPx = gridY * canvasScale;
+  const offX = gridOffsetX * canvasScale;
+  const offY = gridOffsetY * canvasScale;
+  const row  = (sy - offY) / gyPx;
+
+  if (perspStrength === 0) return { col: (sx - offX) / gxPx, row };
+
+  const k    = perspStrength / 100 * 2.5;
+  const vpX  = canvas.width * vpXRatio;
+  const tRow = sy / canvas.height;
+  const flatX = vpX + (sx - vpX) * (1 + k) / (1 + k * tRow);
+  return { col: (flatX - offX) / gxPx, row };
+}
+
+// ===== SLIDERS =====
+function bind(id, fn) { document.getElementById(id).addEventListener('input', e => fn(+e.target.value)); }
+function initSliders() {
+  bind('sliderX',         v => { gridX = v;         document.getElementById('valX').textContent = v;            render(); });
+  bind('sliderY',         v => { gridY = v;         document.getElementById('valY').textContent = v;            render(); });
+  bind('sliderOX',        v => { gridOffsetX = v;   document.getElementById('valOX').textContent = v;           render(); });
+  bind('sliderOY',        v => { gridOffsetY = v;   document.getElementById('valOY').textContent = v;           render(); });
+  bind('sliderGridAlpha', v => { gridAlpha = v/100; document.getElementById('valGridAlpha').textContent = v+'%'; render(); });
+  bind('sliderAlpha',     v => { blockAlpha = v/100;document.getElementById('valAlpha').textContent = v;        render(); });
+  bind('sliderPersp',     v => { perspStrength = v; document.getElementById('valPersp').textContent = v;        render(); });
+  bind('sliderVpX',       v => { vpXRatio = v/100;  document.getElementById('valVpX').textContent = v+'%';      render(); });
+}
+
+// ===== IMAGE LOAD =====
+document.getElementById('fileInput').addEventListener('change', e => {
+  if (e.target.files[0]) loadImage(e.target.files[0]);
+  e.target.value = '';
+});
+document.getElementById('canvasArea').addEventListener('dragover', e => e.preventDefault());
+document.getElementById('canvasArea').addEventListener('drop', e => {
+  e.preventDefault();
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) loadImage(f);
+});
+function loadImage(file) {
+  const url = URL.createObjectURL(file);
+  const i = new Image();
+  i.onload = () => {
+    img = i; resizeCanvas();
+    document.getElementById('dropHint').style.display = 'none';
+    wrapper.style.display = 'inline-block';
+    render(); URL.revokeObjectURL(url);
+  };
+  i.src = url;
+}
+function resizeCanvas() {
+  if (!img) return;
+  const area = document.getElementById('canvasArea');
+  const s = Math.min((area.clientWidth-20)/img.width, (area.clientHeight-20)/img.height, 1);
+  canvasScale = s;
+  canvas.width  = Math.round(img.width  * s);
+  canvas.height = Math.round(img.height * s);
+}
+window.addEventListener('resize', () => { resizeCanvas(); render(); });
+
+// ===== TEXT WRAP =====
+function wrapText(targetCtx, text, maxWidth) {
+  const result = [];
+  for (const para of text.split('\n')) {
+    if (!para) { result.push(''); continue; }
+    if (targetCtx.measureText(para).width <= maxWidth) {
+      result.push(para);
+    } else {
+      let line = '';
+      for (const char of para) {
+        const test = line + char;
+        if (targetCtx.measureText(test).width > maxWidth && line.length > 0) {
+          result.push(line);
+          line = char;
+        } else {
+          line = test;
+        }
+      }
+      if (line) result.push(line);
+    }
+  }
+  return result;
+}
+
+// ===== RENDER =====
+function hexToRgb(hex) {
+  return { r: parseInt(hex.slice(1,3),16), g: parseInt(hex.slice(3,5),16), b: parseInt(hex.slice(5,7),16) };
+}
+
+function render() {
+  if (!img) return;
+  const cw = canvas.width, ch = canvas.height;
+  ctx.clearRect(0, 0, cw, ch);
+  ctx.drawImage(img, 0, 0, cw, ch);
+
+  const gxD = gridX * canvasScale, gyD = gridY * canvasScale;
+  const oxD = gridOffsetX * canvasScale, oyD = gridOffsetY * canvasScale;
+  const rS = Math.floor(-oyD/gyD)-1, rE = Math.ceil((ch-oyD)/gyD)+1;
+  const cS = Math.floor(-oxD/gxD)-1, cE = Math.ceil((cw-oxD)/gxD)+1;
+
+  blocks.forEach(b => drawBlock(b, ctx));
+
+  if (mode === 'move') {
+    blocks.forEach(b => {
+      getBlockCorners(b).forEach(c => {
+        ctx.fillStyle   = 'rgba(255,255,255,0.92)';
+        ctx.strokeStyle = 'rgba(60,60,60,0.8)';
+        ctx.lineWidth   = 1.5;
+        ctx.beginPath();
+        ctx.rect(c.p.x - HANDLE, c.p.y - HANDLE, HANDLE*2, HANDLE*2);
+        ctx.fill(); ctx.stroke();
+      });
+    });
+  }
+
+  if (gridAlpha > 0.01) {
+    ctx.strokeStyle = `rgba(255,255,255,${gridAlpha})`;
+    ctx.lineWidth = 1;
+    for (let r = rS; r <= rE; r++) {
+      const L = perspProject(cS, r), R = perspProject(cE, r);
+      ctx.beginPath(); ctx.moveTo(L.x, L.y); ctx.lineTo(R.x, R.y); ctx.stroke();
+    }
+    for (let c = cS; c <= cE; c++) {
+      const T = perspProject(c, rS), B = perspProject(c, rE);
+      ctx.beginPath(); ctx.moveTo(T.x, T.y); ctx.lineTo(B.x, B.y); ctx.stroke();
+    }
+  }
+}
+
+function drawBlock(b, targetCtx) {
+  const p00 = perspProject(b.gx,       b.gy);
+  const p10 = perspProject(b.gx+b.gw,  b.gy);
+  const p11 = perspProject(b.gx+b.gw,  b.gy+b.gh);
+  const p01 = perspProject(b.gx,       b.gy+b.gh);
+  const {r, g, b: bv} = hexToRgb(b.color);
+
+  targetCtx.beginPath();
+  targetCtx.moveTo(p00.x, p00.y); targetCtx.lineTo(p10.x, p10.y);
+  targetCtx.lineTo(p11.x, p11.y); targetCtx.lineTo(p01.x, p01.y);
+  targetCtx.closePath();
+  targetCtx.fillStyle   = `rgba(${r},${g},${bv},${blockAlpha})`;
+  targetCtx.fill();
+  targetCtx.strokeStyle = `rgba(${r},${g},${bv},0.95)`;
+  targetCtx.lineWidth   = 2;
+  targetCtx.stroke();
+
+  if (b.label) {
+    const cx   = (p00.x+p10.x+p11.x+p01.x) / 4;
+    const cy   = (p00.y+p10.y+p11.y+p01.y) / 4;
+    const fs   = Math.max(7, Math.round(Math.min(b.gw*gridX, b.gh*gridY) * canvasScale * 0.22));
+    const maxW = b.gw * gridX * canvasScale - 6;
+
+    targetCtx.font         = `bold ${fs}px 'Segoe UI', sans-serif`;
+    targetCtx.textAlign    = 'center';
+    targetCtx.textBaseline = 'middle';
+
+    const lines  = wrapText(targetCtx, b.label, maxW);
+    const lh     = fs * 1.35;
+    const startY = cy - (lines.length - 1) * lh / 2;
+
+    targetCtx.fillStyle   = '#fff';
+    targetCtx.shadowColor = 'rgba(0,0,0,0.9)';
+    targetCtx.shadowBlur  = 3;
+    lines.forEach((line, i) => targetCtx.fillText(line, cx, startY + i * lh));
+    targetCtx.shadowBlur  = 0;
+  }
+}
+
+// ===== CORNER HANDLES =====
+function getBlockCorners(b) {
+  return [
+    { p: perspProject(b.gx,      b.gy),      ag: b.gx+b.gw, ar: b.gy+b.gh, cur: 'nw-resize' },
+    { p: perspProject(b.gx+b.gw, b.gy),      ag: b.gx,      ar: b.gy+b.gh, cur: 'ne-resize' },
+    { p: perspProject(b.gx+b.gw, b.gy+b.gh), ag: b.gx,      ar: b.gy,      cur: 'se-resize' },
+    { p: perspProject(b.gx,      b.gy+b.gh), ag: b.gx+b.gw, ar: b.gy,      cur: 'sw-resize' },
+  ];
+}
+function hitCorner(cx, cy) {
+  const r2 = (HANDLE*2) * (HANDLE*2);
+  for (const b of blocks) {
+    for (const c of getBlockCorners(b)) {
+      const dx = cx-c.p.x, dy = cy-c.p.y;
+      if (dx*dx + dy*dy <= r2) return { block: b, corner: c };
+    }
+  }
+  return null;
+}
+
+// ===== HIT DETECTION =====
+function getCanvasPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+}
+function blockAtCanvas(cx, cy) {
+  const {col, row} = perspInverse(cx, cy);
+  return blocks.find(b => col >= b.gx && col < b.gx+b.gw && row >= b.gy && row < b.gy+b.gh);
+}
+
+// ===== MODE =====
+function setMode(m) {
+  mode = m;
+  document.getElementById('modePlace').classList.toggle('active', m === 'place');
+  document.getElementById('modeMove').classList.toggle('active',  m === 'move');
+  canvas.style.cursor = m === 'move' ? 'default' : 'crosshair';
+  hideEditor(); render();
+}
+
+// ===== CANVAS EVENTS =====
+canvas.addEventListener('contextmenu', e => {
+  e.preventDefault();
+  if (!img) return;
+  const {x, y} = getCanvasPos(e);
+  const b = blockAtCanvas(x, y);
+  if (b) removeBlock(b.id);
+});
+
+canvas.addEventListener('mousedown', e => {
+  if (!img || e.button === 2) return;
+  const {x, y} = getCanvasPos(e);
+
+  if (mode === 'move') {
+    const ch = hitCorner(x, y);
+    if (ch) {
+      hideEditor();
+      dragging = { type: 'resize', block: ch.block, anchorGx: ch.corner.ag, anchorGy: ch.corner.ar };
+      canvas.style.cursor = ch.corner.cur;
+      return;
+    }
+    const b = blockAtCanvas(x, y);
+    if (b) {
+      hideEditor();
+      const {col, row} = perspInverse(x, y);
+      dragging = { type: 'move', block: b, offCol: col-b.gx, offRow: row-b.gy };
+      canvas.style.cursor = 'grabbing';
+    }
+    return;
+  }
+
+  // place mode
+  const existing = blockAtCanvas(x, y);
+  if (existing) { showEditor(existing); return; }
+  hideEditor();
+  const {col, row} = perspInverse(x, y);
+  placeBlock(Math.round(col)-1, Math.round(row)-1);
+});
+
+canvas.addEventListener('mousemove', e => {
+  const {x, y} = getCanvasPos(e);
+
+  if (dragging) {
+    if (dragging.type === 'move') {
+      const {col, row} = perspInverse(x, y);
+      dragging.block.gx = Math.round(col - dragging.offCol);
+      dragging.block.gy = Math.round(row - dragging.offRow);
+    } else {
+      const {col, row} = perspInverse(x, y);
+      const dg = Math.round(col), dr = Math.round(row);
+      const b  = dragging.block;
+      b.gx = Math.min(dragging.anchorGx, dg);
+      b.gy = Math.min(dragging.anchorGy, dr);
+      b.gw = Math.max(1, Math.abs(dg - dragging.anchorGx));
+      b.gh = Math.max(1, Math.abs(dr - dragging.anchorGy));
+    }
+    render(); return;
+  }
+
+  if (mode === 'move') {
+    const ch = hitCorner(x, y);
+    if (ch) { canvas.style.cursor = ch.corner.cur; return; }
+    canvas.style.cursor = blockAtCanvas(x, y) ? 'grab' : 'default';
+  }
+});
+
+canvas.addEventListener('mouseup',    stopDrag);
+canvas.addEventListener('mouseleave', stopDrag);
+function stopDrag() {
+  if (!dragging) return;
+  dragging = null;
+  canvas.style.cursor = mode === 'move' ? 'default' : 'crosshair';
+}
+
+// ===== BLOCKS =====
+function placeBlock(gx, gy) {
+  const b = { gx, gy, gw: 3, gh: 3, color: document.getElementById('blockColor').value, label: '', id: nextId++ };
+  blocks.push(b);
+  render();
+  showEditor(b);
+}
+function removeBlock(id) {
+  blocks = blocks.filter(b => b.id !== id);
+  if (editingBlock && editingBlock.id === id) hideEditor();
+  render();
+}
+function clearAll() {
+  if (!blocks.length) return;
+  if (!confirm('全ブロックを削除しますか？')) return;
+  blocks = []; hideEditor(); render();
+}
+
+// ===== BLOCK EDITOR =====
+function editorCenter(b) {
+  const pts = [
+    perspProject(b.gx, b.gy), perspProject(b.gx+b.gw, b.gy),
+    perspProject(b.gx+b.gw, b.gy+b.gh), perspProject(b.gx, b.gy+b.gh),
+  ];
+  return { cx: pts.reduce((s,p)=>s+p.x,0)/4, cy: pts.reduce((s,p)=>s+p.y,0)/4 };
+}
+function showEditor(b) {
+  editingBlock = b;
+  document.getElementById('editorColor').value = b.color;
+  document.getElementById('editorName').value  = b.label;
+  const {cx, cy} = editorCenter(b);
+  const el = document.getElementById('blockEditor');
+  el.style.left    = Math.min(Math.max(0, cx-110), canvas.width -220) + 'px';
+  el.style.top     = Math.min(Math.max(0, cy-23),  canvas.height-46)  + 'px';
+  el.style.display = 'flex';
+  document.getElementById('editorName').focus();
+  document.getElementById('editorName').select();
+}
+function hideEditor() {
+  document.getElementById('blockEditor').style.display = 'none';
+  editingBlock = null;
+}
+document.getElementById('editorColor').addEventListener('input', () => {
+  if (editingBlock) { editingBlock.color = document.getElementById('editorColor').value; render(); }
+});
+document.getElementById('editorName').addEventListener('input', () => {
+  if (editingBlock) { editingBlock.label = document.getElementById('editorName').value; render(); }
+});
+document.getElementById('editorName').addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === 'Escape') { hideEditor(); canvas.focus(); }
+});
+document.getElementById('blockDel').addEventListener('mousedown', e => {
+  e.preventDefault();
+  if (editingBlock) removeBlock(editingBlock.id);
+});
+document.addEventListener('mousedown', e => {
+  const be = document.getElementById('blockEditor');
+  if (editingBlock && !be.contains(e.target) && e.target !== canvas) hideEditor();
+});
+
+// ===== EXPORT =====
+function exportImage() {
+  if (!img) { alert('画像を読み込んでください'); return; }
+
+  const origW = canvas.width, origH = canvas.height, origS = canvasScale;
+  canvas.width  = img.width;
+  canvas.height = img.height;
+  canvasScale   = 1;
+
+  const ec = document.createElement('canvas');
+  ec.width = img.width; ec.height = img.height;
+  const ectx = ec.getContext('2d');
+  ectx.drawImage(img, 0, 0);
+  blocks.forEach(b => drawBlock(b, ectx));
+
+  if (gridAlpha > 0.01) {
+    const rS = Math.floor(-gridOffsetY/gridY)-1, rE = Math.ceil((img.height-gridOffsetY)/gridY)+1;
+    const cS = Math.floor(-gridOffsetX/gridX)-1, cE = Math.ceil((img.width -gridOffsetX)/gridX)+1;
+    ectx.strokeStyle = `rgba(255,255,255,${gridAlpha})`; ectx.lineWidth = 1;
+    for (let r = rS; r <= rE; r++) {
+      const L = perspProject(cS,r), R = perspProject(cE,r);
+      ectx.beginPath(); ectx.moveTo(L.x,L.y); ectx.lineTo(R.x,R.y); ectx.stroke();
+    }
+    for (let c = cS; c <= cE; c++) {
+      const T = perspProject(c,rS), B = perspProject(c,rE);
+      ectx.beginPath(); ectx.moveTo(T.x,T.y); ectx.lineTo(B.x,B.y); ectx.stroke();
+    }
+  }
+
+  canvas.width = origW; canvas.height = origH; canvasScale = origS;
+  render();
+
+  const link = document.createElement('a');
+  link.download = 'lastwar_map_' + new Date().toISOString().slice(0,16).replace(/[T:]/g,'-') + '.png';
+  link.href = ec.toDataURL('image/png');
+  link.click();
+}
+
+// ===== INIT =====
+initSliders();
+</script>
+</body>
+</html>
