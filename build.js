@@ -32,6 +32,7 @@ const FILES = [
   { file: 'tips/tools.html',          root: '../' },
   { file: 'tips/alignment.html',      root: '../' },
   { file: 'tips/kinmyaku.html',       root: '../' },
+  { file: 'tips/glossary.html',       root: '../' },
 ];
 
 // ---- パーシャル読み込み ----
