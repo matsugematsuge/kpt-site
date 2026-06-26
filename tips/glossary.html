@@ -10,14 +10,11 @@
     h2[id] { scroll-margin-top: 72px; }
 
     .img-row {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 8px;
       margin: 16px 0;
       align-items: flex-start;
-    }
-    .img-cell {
-      flex: 1;
-      min-width: 0;
     }
     .img-cell img {
       width: 100%;
@@ -25,10 +22,7 @@
       border-radius: 6px;
       display: block;
       cursor: zoom-in;
-    }
-    .img-row.single .img-cell {
-      flex: none;
-      max-width: 200px;
+      border: 1px solid #ccc;
     }
 
     /* ライトボックス */
@@ -134,7 +128,7 @@
       <div class="img-cell"><img src="../images/IMG_7036.PNG" alt="長官画面3" onclick="lb(this.src)"></div>
     </div>
 
-    <p><strong>「共同～」の使い方：</strong>使いたい相手を選択</p>
+    <p style="margin-top: 1.8em;"><strong>「共同～」の使い方：</strong>使いたい相手を選択</p>
     <div class="img-row">
       <div class="img-cell"><img src="../images/IMG_7040.PNG" alt="共同建造・研究画面1" onclick="lb(this.src)"></div>
       <div class="img-cell"><img src="../images/IMG_7041.PNG" alt="共同建造・研究画面2" onclick="lb(this.src)"></div>
