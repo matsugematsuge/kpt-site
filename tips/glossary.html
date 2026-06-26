@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>今更聞きづらい謎の用語解説 | 美しいKPtの作り方</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    /* スティッキーヘッダーにアンカーが隠れないよう余白を確保 */
+    h2[id] { scroll-margin-top: 72px; }
+
+    .img-row {
+      display: flex;
+      gap: 8px;
+      margin: 16px 0;
+      align-items: flex-start;
+    }
+    .img-cell {
+      flex: 1;
+      min-width: 0;
+    }
+    .img-cell img {
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      display: block;
+      cursor: zoom-in;
+    }
+    .img-row.single .img-cell {
+      flex: none;
+      max-width: 200px;
+    }
+
+    /* ライトボックス */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img {
+      max-width: 95vw;
+      max-height: 92vh;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER:START -->
+<header>
+  <div class="header-inner">
+    <a href="../index.html" class="site-title">美しいKPtの作り方</a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle">
+    <label for="nav-toggle" class="nav-hamburger">&#9776;</label>
+    <nav>
+      <ul>
+        <li><a href="../alliance-rules.html">連盟のルール</a></li>
+        <li><a href="../warzone-rules.html">戦域のルール</a></li>
+        <li><a href="../events.html">イベント等</a></li>
+        <li class="dropdown">
+          <a href="#">Tips ▾</a>
+          <ul class="dropdown-menu">
+            <li><a href="../tips/training.html">無・微課金の育成講座</a></li>
+            <li><a href="../tips/alliance-duel.html">連盟対決のポイント</a></li>
+            <li><a href="../tips/combat.html">戦闘方法講座（戦域戦編）</a></li>
+            <li><a href="../tips/season3.html">シーズン3の進め方</a></li>
+            <li><a href="../tips/season6.html">シーズン6の進め方</a></li>
+            <li><a href="../tips/tools.html">便利かもしれないツール</a></li>
+            <li><a href="../tips/alignment.html">基地整列の基本の「キ」</a></li>
+            <li><a href="../tips/kinmyaku.html">金脈攻防戦</a></li>
+            <li><a href="../tips/glossary.html">今更聞きづらい謎の用語解説</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<!-- HEADER:END -->
+
+<main>
+  <p class="breadcrumb"><a href="../index.html">トップ</a><span>›</span><a href="#">Tips</a><span>›</span>今更聞きづらい謎の用語解説</p>
+
+  <article class="content">
+    <h1>今更聞きづらい謎の用語解説</h1>
+
+    <p>頻繁に連盟チャットで飛び交っているけれど、実は何のことかよくわかっていない、でもちょっと聞きづらい、そんな用語を解説</p>
+
+    <div class="note">
+      <strong>目次</strong>
+      <ul>
+        <li><a href="#hitori-butai">一人部隊</a></li>
+        <li><a href="#chokan">長官</a></li>
+        <li><a href="#neko-punch">猫パンチ</a></li>
+        <li><a href="#ofuro">お風呂</a></li>
+        <li><a href="#inseki">隕鉄</a></li>
+      </ul>
+    </div>
+
+    <h2 id="hitori-butai">一人部隊</h2>
+
+    <p>通常、部隊は5人の英雄で編成していますが、敢えて弱い英雄（ロキとか）1人だけの編成にすること。</p>
+
+    <p>自分ではどうやっても勝てない教官やゾンビ兄貴等の集結をかける際、5人編成だと連れて行く兵士の数が多いので必然的に死んでしまう兵士が増える。一人部隊にすることで、連れていく兵士の数を最小限にし、兵損を抑えることができる。</p>
+
+    <div class="note">
+      ただし、集結に乗る連盟の仲間の被害が大きくなるということでもあるので「一人部隊でいいですよ」って言われたり「一人部隊でもいいですか？」って聞いたり、少し気を遣うことがとても大切。
+    </div>
+
+    <p><strong>編成方法：</strong>部隊編成画面をタップして、入れ替えるだけ。</p>
+    <div class="img-row single">
+      <div class="img-cell"><img src="../images/IMG_7029.PNG" alt="部隊編成画面" onclick="lb(this.src)"></div>
+    </div>
+
+    <h2 id="chokan">長官</h2>
+
+    <p>757サーバー全員が使える各種お得効果。デメリットなし。</p>
+
+    <p>長官に任命された5分の間に、時間がかかる建造や科学などに取り掛かると大幅に時短が可能なので、是非活用しましょう。<br>
+    「共同建造」や「共同研究」などの効果も重ねがけできるため、自分が長官になるタイミングに合わせて使うと吉。</p>
+
+    <p>仲間が長官に並んでいたら、任命予定時間を見て「共同～」を使ってあげると喜ばれます。</p>
+
+    <p><strong>長官になる方法：</strong>この画面から</p>
+    <div class="img-row">
+      <div class="img-cell"><img src="../images/IMG_7033.PNG" alt="長官画面1" onclick="lb(this.src)"></div>
+      <div class="img-cell"><img src="../images/IMG_7034.PNG" alt="長官画面2" onclick="lb(this.src)"></div>
+      <div class="img-cell"><img src="../images/IMG_7036.PNG" alt="長官画面3" onclick="lb(this.src)"></div>
+    </div>
+
+    <p><strong>「共同～」の使い方：</strong>使いたい相手を選択</p>
+    <div class="img-row">
+      <div class="img-cell"><img src="../images/IMG_7040.PNG" alt="共同建造・研究画面1" onclick="lb(this.src)"></div>
+      <div class="img-cell"><img src="../images/IMG_7041.PNG" alt="共同建造・研究画面2" onclick="lb(this.src)"></div>
+    </div>
+
+    <h2 id="neko-punch">猫パンチ</h2>
+
+    <p>シーズン中、都市や拠点の占拠に参加すると参加報酬が貰えます。<br>
+    ただ、占拠できるタイミングが固定されている都合上、生活リズムによっては参加するのが難しいことがあるかと思います。</p>
+
+    <p>そんな時、占拠時間よりも前に一発でも拠点ボスを殴っておくと「この人は占拠に参加した」と見なされるため、拠点ボスを倒してしまわない程度に拠点ボスを軽く殴ることを「猫パンチ」と呼んでいます。</p>
+
+    <div class="note">
+      拠点ボスはとても強いので、前述の「<a href="#hitori-butai">一人部隊</a>」で殴ることをおすすめします。
+    </div>
+
+    <h2 id="ofuro">お風呂</h2>
+
+    <p>シーズン中に拠点を占拠する際、拠点ボスを倒したあと、一定時間、連盟員が拠点に駐留することで始めて拠点占拠が完了します。</p>
+
+    <p>シーズン2の極寒時代に拠点が温泉だったことから「お風呂が沸きました」と呼ばれているのではないかと予想しています。</p>
+
+    <div class="note">
+      「猫パンチ」と同様に、拠点に駐留することでも報酬が貰えるので積極的に駐留しましょう。
+    </div>
+
+    <h2 id="inseki">隕鉄</h2>
+
+    <p>クソゲー</p>
+
+  </article>
+</main>
+
+<div id="lightbox" onclick="this.classList.remove('open')">
+  <img id="lb-img" src="" alt="">
+</div>
+
+<script>
+  function lb(src) {
+    document.getElementById('lb-img').src = src;
+    document.getElementById('lightbox').classList.add('open');
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+  });
+</script>
+
+<!-- FOOTER:START -->
+<footer>
+  &copy; 2025 美しいKPtの作り方
+</footer>
+<!-- FOOTER:END -->
+
+</body>
+</html>
