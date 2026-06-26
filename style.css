@@ -325,10 +325,9 @@ tr:nth-child(even) td { background: #fafafa; }
 
 .note {
   background: var(--gold-light);
-  border-left: 4px solid var(--gold);
   padding: 12px 18px;
   margin: 20px 0;
-  border-radius: 0 6px 6px 0;
+  border-radius: 6px;
 }
 
 .phase-box {
