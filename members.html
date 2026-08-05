@@ -109,6 +109,58 @@
       color: var(--text-muted);
       margin: -20px 0 24px;
     }
+
+    .pager-a {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+    .pager-a a, .pager-a span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 18px;
+      font-size: 0.9em;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      color: var(--text);
+      background: var(--card);
+    }
+    .pager-a a:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      opacity: 1;
+    }
+    .pager-a .current {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: #fff;
+      font-weight: bold;
+    }
+    .pager-a .arrow {
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-weight: bold;
+    }
+    .pager-a .arrow:hover { color: var(--gold); }
+    .pager-a .disabled {
+      border: none;
+      background: none;
+      color: #ccc;
+      pointer-events: none;
+    }
+    .pager-a .ellipsis {
+      border: none;
+      background: none;
+      color: var(--text-muted);
+    }
   </style>
 </head>
 <body>
@@ -405,6 +457,13 @@
       </div>
 
     </div>
+
+    <nav class="pager-a">
+      <span class="arrow disabled">‹ 前へ</span>
+      <span class="current">1</span>
+      <a href="members-2.html">2</a>
+      <a href="members-2.html" class="arrow">次へ ›</a>
+    </nav>
   </article>
 </main>
 
