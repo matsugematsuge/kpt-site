@@ -24,6 +24,8 @@ const FILES = [
   { file: 'alliance-rules.html',      root: ''    },
   { file: 'warzone-rules.html',       root: ''    },
   { file: 'events.html',              root: ''    },
+  { file: 'members.html',             root: ''    },
+  { file: 'members-2.html',           root: ''    },
   { file: 'tips/training.html',       root: '../' },
   { file: 'tips/alliance-duel.html',  root: '../' },
   { file: 'tips/combat.html',         root: '../' },
