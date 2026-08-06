@@ -26,6 +26,7 @@ const FILES = [
   { file: 'events.html',              root: ''    },
   { file: 'members.html',             root: ''    },
   { file: 'members-2.html',           root: ''    },
+  { file: 'members-3.html',           root: ''    },
   { file: 'tips/training.html',       root: '../' },
   { file: 'tips/alliance-duel.html',  root: '../' },
   { file: 'tips/combat.html',         root: '../' },
