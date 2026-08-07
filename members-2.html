@@ -110,6 +110,31 @@
       margin: -20px 0 24px;
     }
 
+    .member-jump {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0 24px;
+      flex-wrap: wrap;
+    }
+    .member-jump label {
+      font-size: 0.85em;
+      color: var(--text-muted);
+    }
+    .member-jump select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 0.9em;
+      min-width: 240px;
+    }
+    .member-jump select:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
     .pager-a {
       display: flex;
       justify-content: center;
@@ -203,6 +228,34 @@
   <article class="content">
     <h1>KPt図鑑</h1>
     <p class="page-credit">produced by つばめ🥷</p>
+
+    <div class="member-jump">
+      <label for="member-jump-select">メンバーを選んで移動</label>
+      <select id="member-jump-select" onchange="if(this.value) location.href=this.value;">
+        <option value="">-- メンバーを選択 --</option>
+        <option value="members.html#no01">りとちゃん</option>
+        <option value="members.html#no02">tagちゃん</option>
+        <option value="members.html#no03">もんちゃん</option>
+        <option value="members.html#no04">るにちゃん</option>
+        <option value="members.html#no05">ぴしゅにき(おーりりんさん)</option>
+        <option value="members.html#no06">ねぎせちょす</option>
+        <option value="members.html#no07">むっきん(筋肉ちゃん)</option>
+        <option value="members.html#no08">はなたん</option>
+        <option value="members.html#no09">まつ毛先生</option>
+        <option value="members.html#no10">こちゃ(こぅ23さん)</option>
+        <option value="members-2.html#no11">りんたん（正式には リんたん）</option>
+        <option value="members-2.html#no12">わくちゃん</option>
+        <option value="members-2.html#no13">ぽっちちゃん</option>
+        <option value="members-2.html#no14">茶葉ちゃん</option>
+        <option value="members-2.html#no15">ぷーたん</option>
+        <option value="members-2.html#no16">とらちゃん</option>
+        <option value="members-2.html#no17">まち森くん</option>
+        <option value="members-2.html#no18">フィルちゃん</option>
+        <option value="members-2.html#no19">ちゃわたん</option>
+        <option value="members-2.html#no20">岩塩先生</option>
+        <option value="members-3.html#no21">ケムちゃん</option>
+      </select>
+    </div>
 
     <div class="member-grid">
 
