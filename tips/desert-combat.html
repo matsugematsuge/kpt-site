@@ -39,6 +39,33 @@
     details.deep-dive .deep-dive-body {
       margin-top: 16px;
     }
+
+    .tip-img {
+      max-width: 100%;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      display: block;
+      margin: 16px 0;
+      cursor: zoom-in;
+    }
+
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox img {
+      max-width: 95vw;
+      max-height: 92vh;
+      object-fit: contain;
+      border-radius: 8px;
+    }
   </style>
 </head>
 <body>
@@ -154,6 +181,10 @@
       ポイントが貯まっている施設への攻撃は、緊急の場合を除いてポイント回収の体制が整うまで控えましょう。せっかく貯まったポイント箱を相手に奪われてしまうためです。回収のタイミングやメンバーについては基本的にVCやチャットで指示が出ますので、それに従って集団で動くようにしましょう。
     </div>
 
+    <p>1万近く貯まったポイントはかなり大きく弾けて飛びます。<br>
+    施設に攻撃しないポイント回収組は、施設と施設の間に移設するくらいがベストです！</p>
+    <img class="tip-img" src="../images/desert-point-recovery.png" alt="ポイント回収時の配置例（敵・攻撃者・回収者を施設と施設の間に配置する）" onclick="lb(this.src)">
+
     <details class="deep-dive">
       <summary>なぜポイント貯めさせて回収するのか<span class="aside">※ちょっと長いので、気になる方だけどうぞ！<br>&lt;&lt;CLICK!&gt;&gt;</span></summary>
       <div class="deep-dive-body">
@@ -184,6 +215,20 @@ B：27400（21000+6400）
     </div>
   </article>
 </main>
+
+<div id="lightbox" onclick="this.classList.remove('open')">
+  <img id="lb-img" src="" alt="">
+</div>
+
+<script>
+  function lb(src) {
+    document.getElementById('lb-img').src = src;
+    document.getElementById('lightbox').classList.add('open');
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+  });
+</script>
 
 <!-- FOOTER:START -->
 <footer>
