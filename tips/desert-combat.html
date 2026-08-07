@@ -7,6 +7,38 @@
   <link rel="stylesheet" href="../style.css">
   <style>
     h2[id] { scroll-margin-top: 72px; }
+
+    details.deep-dive {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 32px 0;
+      background: var(--card);
+    }
+    details.deep-dive summary {
+      cursor: pointer;
+      font-weight: bold;
+      color: var(--text);
+      list-style: none;
+    }
+    details.deep-dive summary::-webkit-details-marker { display: none; }
+    details.deep-dive summary::before {
+      content: "▶ ";
+      color: var(--gold);
+    }
+    details.deep-dive[open] summary::before {
+      content: "▼ ";
+    }
+    details.deep-dive summary .aside {
+      display: block;
+      font-size: 0.85em;
+      font-weight: normal;
+      color: var(--text-muted);
+      margin: 4px 0 0 1.3em;
+    }
+    details.deep-dive .deep-dive-body {
+      margin-top: 16px;
+    }
   </style>
 </head>
 <body>
@@ -121,6 +153,30 @@
     <div class="note">
       ポイントが貯まっている施設への攻撃は、緊急の場合を除いてポイント回収の体制が整うまで控えましょう。せっかく貯まったポイント箱を相手に奪われてしまうためです。回収のタイミングやメンバーについては基本的にVCやチャットで指示が出ますので、それに従って集団で動くようにしましょう。
     </div>
+
+    <details class="deep-dive">
+      <summary>なぜポイント貯めさせて回収するのか<span class="aside">※ちょっと長いので、気になる方だけどうぞ！<br>&lt;&lt;CLICK!&gt;&gt;</span></summary>
+      <div class="deep-dive-body">
+        <ul>
+          <li>狙う施設が絞れる分、放置施設以外の施設に人員が割け、占拠が有利になる</li>
+          <li>長時間占拠を続ける（続けさせられる）のは非常に危険だから</li>
+        </ul>
+
+        <p>まず、施設占拠開始から1分が経過したら、その後各施設で獲得できるポイントの4/10がその施設に貯まっていきます。（各施設の上に表示されているのが貯まっているポイント）</p>
+        <p>表面上のポイントは、その貯まっているポイントも占拠している側に加算されている状態ですが、相手に占拠されて仮にポイント箱が弾き飛び、それを回収されたら、貯まっていたポイント数（取られたポイント箱の数）が占拠された側からマイナスされ、相手に拾われたポイント箱分のポイントが相手に加算されます。</p>
+
+        <div class="phase-box">例）A：32000、B：21000の状態で、A占拠施設の貯まっているポイント：8000があったとします。
+それをBが占拠しポイント箱が飛び、その8割（6400）をBが回収した場合、
+A：25600（32000-6400）
+B：27400（21000+6400）
+となり、逆転になります。</div>
+
+        <p>なので、貯める以外の施設はキッチリと競り勝ち、貯めさせたポイントをしっかり回収できれば、かなり勝ちやすくなります。<br>
+        サイロも含めると貯まるポイントは5万とかになるので、8割と取れれば、8万差がひっくり返ることになります。</p>
+
+        <p>ただ逆も然り、貯めさせられると回収は相手のタイミングでされるので、全て回収するのは難しく、その分取られるリスクが高くなるので放置する施設以外も、貯まる前に競り負けてる風に見せて、わざと取らせるなどが必要になってきます😊</p>
+      </div>
+    </details>
 
     <div class="summary-box">
       <h2>前段として</h2>
