@@ -28,6 +28,7 @@ const FILES = [
   { file: 'members-2.html',           root: ''    },
   { file: 'members-3.html',           root: ''    },
   { file: 'tips/training.html',       root: '../' },
+  { file: 'tips/desert-combat.html',  root: '../' },
   { file: 'tips/alliance-duel.html',  root: '../' },
   { file: 'tips/combat.html',         root: '../' },
   { file: 'tips/season3.html',        root: '../' },
